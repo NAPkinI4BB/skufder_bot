@@ -1,21 +1,20 @@
 import { session, Telegraf } from "telegraf";
 import { ConfigService } from "./config/config.service";
 import { IConfigService } from "./config/config.interface";
-import { IBotContext } from "./context/context.interface"
+import { IBotContext } from "./context/context.interface";
 import { Command } from "./commands/command.class";
 import { CommandStart } from "./commands/command.start";
-import { ISessionData } from "./context/context.interface";
+import { SQLiteSession } from "./tmp/db";
+
 
 class Bot {
     bot: Telegraf<IBotContext>;
     commands: Command[] = [];
+
     constructor(private readonly configService: IConfigService) {
         this.bot = new Telegraf<IBotContext>(this.configService.get("TOKEN"));
-        this.bot.use(session({
-            defaultSession: (): ISessionData => ({
-                isLiked: false
-            })
-        }));
+        const session = new SQLiteSession();
+        this.bot.use(session.middleware());
     }
 
     init() {
@@ -23,9 +22,10 @@ class Bot {
         for (const command of this.commands) {
             command.handle();
         }
-        this.bot.launch();
+        this.bot.launch().then(() => {
+            console.log('Bot is running!');
+        });
     }
-
 }
 
 const bot = new Bot(new ConfigService());
