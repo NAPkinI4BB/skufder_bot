@@ -4,7 +4,9 @@ import { IConfigService } from "./config/config.interface";
 import { IBotContext } from "./context/context.interface";
 import { Command } from "./commands/command.class";
 import { CommandStart } from "./commands/command.start";
+import { CommandAbout } from "./commands/command.about";
 import { SQLiteSession } from "./tmp/db";
+import { CommandNewform } from "./commands/command.newform";
 
 
 class Bot {
@@ -18,7 +20,9 @@ class Bot {
     }
 
     init() {
-        this.commands = [new CommandStart(this.bot)];
+        this.commands = [new CommandStart(this.bot), 
+            new CommandAbout(this.bot), 
+            new CommandNewform(this.bot)];
         for (const command of this.commands) {
             command.handle();
         }

@@ -2,4 +2,4 @@
 /dist
 nodemon.json
 /node_modules
-sessions.sqlite3
+users.sqlite3
