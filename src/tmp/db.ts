@@ -92,7 +92,7 @@ export class SQLiteSession {
         return ctx.from ? `${ctx.from.id}` : null;
     }
 
-    private loadSession(key: string): Promise<any> {
+    public loadSession(key: string): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log("loadSession reached");
             this.db.get('SELECT data FROM users WHERE id = ?', [key], 
@@ -106,7 +106,7 @@ export class SQLiteSession {
         });
     }
 
-    private saveData(key: string, ctx: any): Promise<void> {
+    public saveData(key: string, ctx: any): Promise<void> {
         return new Promise((resolve, reject) => {
             this.db.run(
                 'INSERT INTO users (id, data) VALUES (?, ?) ON CONFLICT(id) DO UPDATE SET data = ?',
@@ -121,7 +121,7 @@ export class SQLiteSession {
         });
     }
 
-    private userExistsInDb(key: string): Promise<boolean> {
+    public userExistsInDb(key: string): Promise<boolean> {
         return new Promise((resolve, reject) => {
             this.db.get('SELECT id FROM users WHERE id = ?', [key], (err, row) => {
                 if (err) {

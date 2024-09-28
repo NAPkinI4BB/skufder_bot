@@ -1,4 +1,4 @@
-import { session, Telegraf } from "telegraf";
+import { Telegraf } from "telegraf";
 import { ConfigService } from "./config/config.service";
 import { IConfigService } from "./config/config.interface";
 import { IBotContext } from "./context/context.interface";
@@ -12,11 +12,12 @@ import { CommandNewform } from "./commands/command.newform";
 class Bot {
     bot: Telegraf<IBotContext>;
     commands: Command[] = [];
+    session: SQLiteSession;
 
     constructor(private readonly configService: IConfigService) {
         this.bot = new Telegraf<IBotContext>(this.configService.get("TOKEN"));
-        const session = new SQLiteSession();
-        this.bot.use(session.middleware());
+        this.session = new SQLiteSession();
+        this.bot.use(this.session.middleware());
     }
 
     init() {
@@ -34,3 +35,5 @@ class Bot {
 
 const bot = new Bot(new ConfigService());
 bot.init();
+
+export default bot.session;
