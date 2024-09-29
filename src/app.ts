@@ -36,4 +36,4 @@ class Bot {
 const bot = new Bot(new ConfigService());
 bot.init();
 
-export default bot.session;
+export const dbSession = bot.session;

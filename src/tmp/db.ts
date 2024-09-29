@@ -28,63 +28,16 @@ export class SQLiteSession {
     middleware(): Middleware<IBotContext> {
         return async (ctx, next) => {
             const key = this.getSessionKey(ctx);
-            if (ctx.message && 'text' in ctx.message) {
-                const command_text = ctx.message.text;
-                console.log(`Получен текст сообщения: ${command_text}`);
-                if (key) {
-                    const loadedSession = await this.loadSession(key);
-                    console.log("СЕССИЯ В НАЧАЛЕ", loadedSession);
-                }
-                if (command_text === '/start') {
-                    if (key) {
-                        // console.log(ctx.chat);
-                        const loadedSession = await this.loadSession(key);
-                        console.log("Загруженная сессия:", loadedSession);
+           
 
-                        ctx.session = Object.keys(loadedSession).length !== 0 ? loadedSession : Object.assign({}, ctx.chat, { isChoosing: false, 
-                            isInDB: false, isAwaitingAge: false, age: 0 });
-                        console.log("Получившаяся сессия:", ctx.session);
-                        ctx.session.isInDB = await this.userExistsInDb(key);
-                    }
-
-                    await next();
+            await next();
     
-                    if (key && ctx.chat) {
-                        await this.saveData(key, ctx);
-                    }
-                } 
-                else if (command_text === 'Да') {
-                    if (key) {
-                        const loadedSession = await this.loadSession(key);
-                        console.log("Загруженная сессия:", loadedSession);
-                        ctx.session = loadedSession;
-                        await next();
-                    }
-                } else if (ctx.session.isAwaitingAge) {
-                    const age = parseInt(command_text, 10);
-                    console.log("AGE IN db", age);
-                    if (!isNaN(age) && age > 0 && age < 120) {
-                        ctx.session.age = age; // Сохраняем возраст в сессии
-                        ctx.session.isAwaitingAge = false; // Сбрасываем состояние ожидания
-                        await ctx.reply(`Ваш возраст: ${age} лет. Анкета обновлена.`);
-
-                        // Сохраняем сессию с возрастом в БД
-                        if (key) {
-                            await this.saveData(key, ctx);
-                        }
-                    } else {
-                        await ctx.reply("Пожалуйста, введите корректный возраст (число от 1 до 120).");
-                    }
-                } else {
-                    console.log(`Обрабатываемое сообщение: ${command_text}`);
-                    console.log(`isAwaitingAge: ${ctx.session.isAwaitingAge}`);
-                    await next();
+            if (key && ctx.chat) {
+                await this.saveData(key, ctx);
                 }
-            } else {
-                await next();
-            }
+            } 
+                
         };
-    }
     
     
 
